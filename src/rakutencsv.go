@@ -3,6 +3,8 @@ package main
 import (
 				"encoding/csv"
 				"fmt"
+				"golang.org/x/text/encoding/japanese"
+        "golang.org/x/text/transform"
 				"io"
 				"log"
 				"os"
@@ -10,7 +12,6 @@ import (
 				"strings"
 				"time"
 
-				iconv "github.com/djimenez/iconv-go"
 )
 
 // csv生データを格納する構造体
@@ -53,6 +54,7 @@ account string, numOfShare string, unitSellPrice string, sellPrice string, buyPr
 				var f float64
 				var err error
 
+				/*
 				// debug
 				fmt.Println(contractDate)
 				fmt.Println(valueDate)
@@ -65,6 +67,7 @@ account string, numOfShare string, unitSellPrice string, sellPrice string, buyPr
 				fmt.Println(sellPrice)
 				fmt.Println(buyPriceAvg)
 				fmt.Println(profitAndLoss)
+				*/
 
 				// 値のセット
 				t.ContractDate = contractDate
@@ -181,7 +184,7 @@ func (t *TradeMonthData) Add(tradeMonthDatas []TradeMonthData, tradeRaw TradeRaw
                                         tradeMonthDatas[i].LossMax = tradeRaw.ProfitAndLoss
                                 }
                                 tradeMonthDatas[i].LossRatioAvg += tradeRaw.ProfitRatio
-                                if tradeMonthDatas[i].LossRatioMax < tradeRaw.ProfitRatio {
+                                if tradeMonthDatas[i].LossRatioMax > tradeRaw.ProfitRatio {
                                         tradeMonthDatas[i].LossRatioMax = tradeRaw.ProfitRatio
                                 }
                                 tradeMonthDatas[i].LossTrade++
@@ -203,7 +206,7 @@ func main() {
 				// TODO:読み込みパスを指定できるようにする
 				f, err := os.Open("file.csv")
 				if err != nil {
-								log.Fatal(err)
+								log.Fatal("Can't find \"file.csv\" in current directory: ", err)
 				}
 
 				r := csv.NewReader(f)
@@ -238,9 +241,11 @@ func main() {
 				}
 
 				// debug
+				/*
 				for _, v := range trs {
 								println(v.Name, v.ProfitRatio)
 				}
+				*/
 
 				// csvファイルのrawデータを月別のデータに格納
 				for _, tr := range trs {
@@ -253,7 +258,8 @@ func main() {
 												tmds[i].ProfitAvg = v.ProfitAvg / float64(v.WinTrade)
 												tmds[i].ProfitRatioAvg = v.ProfitRatioAvg / float64(v.WinTrade)
 												tmds[i].WinRatio = float64(v.WinTrade) / float64(v.TradeNum) * 100
-								} else if v.LossTrade != 0 {
+								}
+								if v.LossTrade != 0 {
 												tmds[i].LossAvg = v.LossAvg / float64(v.LossTrade)
 												tmds[i].LossRatioAvg = v.LossRatioAvg / float64(v.LossTrade)
 								}
@@ -290,12 +296,12 @@ func main() {
 				// ファイルを空にする
 				err = fw.Truncate(0)
 
-				converter, err := iconv.NewWriter(fw, "utf-8", "sjis")
-				if err != nil {
-								log.Fatal(err)
-				}
+				// shift-JISに変換
+				writer := csv.NewWriter(transform.NewWriter(fw, japanese.ShiftJIS.NewEncoder()))
+				writer.UseCRLF = true //デフォルトはLFのみ
 
-				writer := csv.NewWriter(converter)
+				// utf-8の場合
+        //writer := csv.NewWriter(fw)
 
 				// ヘッダの追記
 				writer.Write([]string{"年月", "平均利益", "平均損失", "最大利益", "最大損失",
@@ -317,6 +323,7 @@ func main() {
 								strconv.FormatFloat(v.WinRatio, 'f', 2, 64),
 								strconv.Itoa(v.TradeNum)})
 				}
+				// TODO:平均を追記する
 				writer.Flush()
 }
 
