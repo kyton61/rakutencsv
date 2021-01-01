@@ -113,11 +113,11 @@ account string, numOfShare string, unitSellPrice string, sellPrice string, buyPr
 
 }
 
-// "2006/01/02" 形式を "200601" 形式に変換
+// "2006/01/02" 形式を "2006/01" 形式に変換
 func ContractDateToYYYYmm(strdate string) string {
 				var YYYYmm string
 				t, _ := time.Parse("2006/01/02", strdate)
-				YYYYmm = t.Format("200601")
+				YYYYmm = t.Format("2006/01")
 
 				return YYYYmm
 }
