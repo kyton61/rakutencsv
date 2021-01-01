@@ -78,31 +78,31 @@ account string, numOfShare string, unitSellPrice string, sellPrice string, buyPr
 				t.Account = account
 
 				// string型以外のデータは型変換してセット
+				numOfShare = strings.Replace(numOfShare, ",", "", -1) // 数字中のカンマを削除
 				i, err = strconv.Atoi(numOfShare)
 				if err != nil {
 								log.Fatal(err)
 				}
 				t.NumOfShare = i
-				// 数字中のカンマを削除
-				unitSellPrice = strings.Replace(unitSellPrice, ",", "", -1)
+				unitSellPrice = strings.Replace(unitSellPrice, ",", "", -1) // 数字中のカンマを削除
 				f, err = strconv.ParseFloat(unitSellPrice, 32)
 				if err != nil {
 								log.Fatal(err)
 				}
 				t.UnitSellPrice = f
-				sellPrice = strings.Replace(sellPrice, ",", "", -1)
+				sellPrice = strings.Replace(sellPrice, ",", "", -1) // 数字中のカンマを削除
 				f, err = strconv.ParseFloat(sellPrice, 32)
 				if err != nil {
 								log.Fatal(err)
 								}
 				t.SellPrice = f
-				buyPriceAvg = strings.Replace(buyPriceAvg, ",", "", -1)
+				buyPriceAvg = strings.Replace(buyPriceAvg, ",", "", -1) // 数字中のカンマを削除
 				f, err = strconv.ParseFloat(buyPriceAvg, 32)
 				if err != nil {
 								log.Fatal(err)
 				}
 				t.BuyPriceAvg = f
-				profitAndLoss = strings.Replace(profitAndLoss, ",", "", -1)
+				profitAndLoss = strings.Replace(profitAndLoss, ",", "", -1) // 数字中のカンマを削除
 				f, err = strconv.ParseFloat(profitAndLoss, 32)
 				if err != nil {
 								log.Fatal(err)
@@ -228,7 +228,6 @@ func main() {
 												log.Fatal(err)
 								}
 								fmt.Println(record)
-								fmt.Println(len(record))
 								// フッター読み飛ばしのため、空行がでてきたらbreak
 								if len(record[0]) == 0 {
 												break
