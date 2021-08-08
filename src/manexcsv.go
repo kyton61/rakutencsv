@@ -234,8 +234,9 @@ func main() {
 								}
 
 								// ヘッダを除いてcsvファイルデータを構造体に読み込む
+								// 楽天証券とマネックス証券でカラム位置の差分あり
 								var tr TradeRaw
-								tr.Set(record[0],record[1],record[2],record[3],record[4],record[5],record[6],record[7],record[8],record[9],record[10])
+								tr.Set(record[13],record[13],"DUMMY",record[0],record[3],record[2],record[4],record[5],record[9],"99999",record[10])
 								trs = append(trs, tr)
 				}
 
